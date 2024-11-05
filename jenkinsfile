@@ -10,7 +10,7 @@ pipeline {
         stage('Pull Docker Image') {
             steps {
                 script {
-                    echo "Pulling Docker image: ${DOCKER_IMAGE}"
+                    // Pull the Selenium Docker image
                     sh "docker pull ${DOCKER_IMAGE}"
                 }
             }
@@ -19,9 +19,9 @@ pipeline {
         stage('Start HTTP Server') {
             steps {
                 script {
-                    echo "Starting HTTP server on port ${HTTP_SERVER_PORT}"
                     // Start the local HTTP server
-                    sh "python -m http.server ${HTTP_SERVER_PORT} &"
+                    // Use 'start' to run the server in a new window
+                    bat "start cmd /c python -m http.server ${HTTP_SERVER_PORT}"
                     sleep 5 // Wait for the server to start
                 }
             }
@@ -30,9 +30,8 @@ pipeline {
         stage('Run Selenium WebDriver Container') {
             steps {
                 script {
-                    echo "Starting Selenium WebDriver container"
                     // Start the Selenium WebDriver container
-                    sh "docker run -d --name selenium ${DOCKER_IMAGE} -v /dev/shm:/dev/shm -p 4444:4444"
+                    sh "docker run -d -p 4444:4444 -v /dev/shm:/dev/shm ${DOCKER_IMAGE}"
                 }
             }
         }
@@ -40,7 +39,6 @@ pipeline {
         stage('Run Selenium Test') {
             steps {
                 script {
-                    echo "Executing Selenium tests"
                     // Execute the Selenium test
                     sh 'python seleniumDockerTest.py'
                 }
@@ -50,10 +48,9 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    echo "Stopping and removing Selenium container"
                     // Stop and remove the Selenium container
-                    sh 'docker stop selenium || true' // Handle case if the container is already stopped
-                    sh 'docker rm selenium || true' // Handle case if the container is already removed
+                    sh 'docker stop $(docker ps -q --filter ancestor=${DOCKER_IMAGE})'
+                    sh 'docker rm $(docker ps -aq --filter ancestor=${DOCKER_IMAGE})'
                 }
             }
         }
@@ -61,7 +58,6 @@ pipeline {
     
     post {
         always {
-            echo "Cleaning up the environment..."
             // Archive logs or reports if needed
             archiveArtifacts artifacts: '**/*.log', allowEmptyArchive: true
         }

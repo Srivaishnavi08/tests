@@ -19,8 +19,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Ensure the HTTP server is running on the host machine before running tests
-                    bat 'python -m http.server 8000'
+                    // Start the HTTP server in a new command prompt window
+                    bat 'start cmd /c python -m http.server 8000'
+                    // Give some time for the server to start
+                    bat 'timeout /t 5 /nobreak' // Wait for 5 seconds (adjust if necessary)
                     // Run your test file
                     bat 'python tests/seleniumDockerTest.py'
                 }

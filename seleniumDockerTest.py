@@ -16,19 +16,11 @@ pipeline {
                 }
             }
         }
-        stage('Start HTTP Server') {
-            steps {
-                script {
-                    // Start the HTTP server in the background
-                    bat 'start cmd /c "cd tests && python -m http.server 8000"'
-                    // Optional: Wait for a few seconds to ensure the server is up
-                    sleep 5
-                }
-            }
-        }
         stage('Run Tests') {
             steps {
                 script {
+                    // Ensure the HTTP server is running on the host machine before running tests
+                    bat 'python -m http.server 8000 &'
                     // Run your test file
                     bat 'python tests/seleniumDockerTest.py'
                 }

@@ -1,7 +1,23 @@
 pipeline {
     agent any
     stages {
-        stage('Pull Docker Image') {
+        stage('Build Docker Image for HTML') {
+            steps {
+                script {
+                    // Build the Docker image
+                    bat 'docker build -t my-nginx-html .'
+                }
+            }
+        }
+        stage('Run HTML Server') {
+            steps {
+                script {
+                    // Run the container to serve the HTML file
+                    bat 'docker run -d -p 8000:80 --name html-server my-nginx-html'
+                }
+            }
+        }
+        stage('Pull Docker Image for Selenium') {
             steps {
                 script {
                     bat 'docker pull selenium/standalone-chrome'
@@ -16,14 +32,10 @@ pipeline {
                 }
             }
         }
-        stage('Run Server') {
+        stage('Run Tests') {
             steps {
                 script {
-                    // Start the HTTP server in a new command prompt window
-                    bat 'python -m http.server 8000'
-                    // Give some time for the server to start
-                    // Wait for the server to become available
-                    bat 'call timeout /t 5' 
+                    // Run your test file in a new terminal window
                     bat 'start cmd /c python seleniumDockerTest.py'
                 }
             }
@@ -34,6 +46,9 @@ pipeline {
                     // Stop and remove the Selenium container
                     bat 'docker stop selenium-chrome'
                     bat 'docker rm selenium-chrome'
+                    // Stop and remove the HTML server container
+                    bat 'docker stop html-server'
+                    bat 'docker rm html-server'
                 }
             }
         }

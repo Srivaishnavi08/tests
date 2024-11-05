@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Ensure the HTTP server is running on the host machine before running tests
-                    bat 'python -m http.server 8000 &'
+                    bat 'python -m http.server 8000'
                     // Run your test file
                     bat 'python tests/seleniumDockerTest.py'
                 }

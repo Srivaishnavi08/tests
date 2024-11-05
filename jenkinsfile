@@ -1,11 +1,11 @@
 pipeline {
     agent any
     stages {
-        stage('Build Docker Image for HTML') {
+        stage('Build Docker Image for HTML Server') {
             steps {
                 script {
-                    // Build the Docker image
-                    bat 'docker build -t my-nginx-html .'
+                    // Build the Docker image for the HTTP server
+                    bat 'docker build -t my-python-server .'
                 }
             }
         }
@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // Run the container to serve the HTML file
-                    bat 'docker run -d -p 8000:80 --name html-server my-nginx-html'
+                    bat 'docker run -d -p 8000:8000 --name html-server my-python-server'
                 }
             }
         }

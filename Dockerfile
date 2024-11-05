@@ -1,8 +1,14 @@
-# Use the official Nginx image from Docker Hub
-FROM nginx:alpine
+# Use a minimal Debian base image with Python
+FROM python:3.11-slim
 
-# Copy the index.html file to the Nginx HTML directory
-COPY index.html /usr/share/nginx/html/index.html
+# Set the working directory
+WORKDIR /app
 
-# Expose port 80 for the Nginx server
-EXPOSE 80
+# Copy the index.html file into the container
+COPY index.html .
+
+# Expose port 8000 for the HTTP server
+EXPOSE 8000
+
+# Command to run the HTTP server
+CMD ["python", "-m", "http.server", "8000"]

@@ -1,13 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage('Pull Docker Image') {
-            steps {
-                script {
-                    bat 'docker pull selenium/standalone-chrome'
-                }
-            }
-        }
         stage('Start Selenium Container') {
             steps {
                 script {

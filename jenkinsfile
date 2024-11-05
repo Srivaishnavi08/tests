@@ -23,34 +23,6 @@ pipeline {
                     bat 'python -m http.server 8000'
                     // Give some time for the server to start
                     / Wait for the server to become available
-                    def retries = 10
-                    def waitTime = 5 // seconds
-                    def serverUp = false
-
-                    for (int i = 0; i < retries; i++) {
-                        sleep(waitTime) // Wait for a bit
-                        try {
-                            // Attempt to access the server
-                            def response = bat(script: 'curl -s -o NUL http://127.0.0.1:8000', returnStatus: true)
-                            if (response == 0) {
-                                serverUp = true
-                                break
-                            }
-                        } catch (Exception e) {
-                            echo "Server not yet available: ${e.message}"
-                        }
-                    }
-
-                    if (!serverUp) {
-                        error "HTTP server did not start in time."
-                    }
-                }
-            }
-        }
-        stage('Run Tests'){
-            steps {
-                script {
-                    // Run your test file
                     bat 'start cmd /c python seleniumDockerTest.py'
                 }
             }

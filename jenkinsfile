@@ -22,12 +22,7 @@ pipeline {
                     // Start the HTTP server in a new command prompt window
                     bat 'start cmd /c python -m http.server 8000'
                     // Give some time for the server to start
-                    waitUntil {
-                        script {
-                            def response = bat(script: 'curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000', returnStdout: true).trim()
-                            return response == '200'
-                        }
-                    }
+                    bat 'call timeout /t 30' 
                 }
             }
         }

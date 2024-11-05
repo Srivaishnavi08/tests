@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'selenium/standalone-chrome'
+        HTTP_SERVER_PORT = 8000
+    }
+
+    stages {
+        stage('Pull Docker Image') {
+            steps {
+                script {
+                    // Pull the Selenium Docker image
+                    sh 'docker pull ${DOCKER_IMAGE}'
+                }
+            }
+        }
+        
+        stage('Start HTTP Server') {
+            steps {
+                script {
+                    // Start the local HTTP server
+                    sh "python -m http.server ${HTTP_SERVER_PORT} &"
+                    sleep 5 // Wait for the server to start
+                }
+            }
+        }
+        
+        stage('Run Selenium WebDriver Container') {
+            steps {
+                script {
+                    // Start the Selenium WebDriver container
+                    sh "docker run -d -p 4444:4444 -v /dev/shm:/dev/shm ${DOCKER_IMAGE}"
+                }
+            }
+        }
+        
+        stage('Run Selenium Test') {
+            steps {
+                script {
+                    // Execute the Selenium test
+                    sh 'python seleniumDockerTest.py'
+                }
+            }
+        }
+        
+        stage('Cleanup') {
+            steps {
+                script {
+                    // Stop and remove the Selenium container
+                    sh 'docker stop $(docker ps -q --filter ancestor=${DOCKER_IMAGE})'
+                    sh 'docker rm $(docker ps -aq --filter ancestor=${DOCKER_IMAGE})'
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            // Archive logs or reports if needed
+            archiveArtifacts artifacts: '**/*.log', allowEmptyArchive: true
+        }
+    }
+}

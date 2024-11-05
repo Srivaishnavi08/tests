@@ -8,18 +8,13 @@ pipeline {
                 }
             }
         }
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    sh 'docker run -d -p 4444:4444 -v /dev/shm:/dev/shm selenium/standalone-chrome'
-                }
-            }
-        }
         stage('Start HTTP Server') {
             steps {
                 script {
-                    // Navigate to the directory containing index.html and start the HTTP server
-                    sh 'cd path/to/your/html && python -m http.server 8000 &'
+                    // Start the HTTP server in the background
+                    sh 'start cmd /c "cd path/to/your/html && python -m http.server 8000"'
+                    // Optional: Wait for a few seconds to ensure the server is up
+                    sleep 5
                 }
             }
         }

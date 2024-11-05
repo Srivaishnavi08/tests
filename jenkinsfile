@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Start the HTTP server in a new command prompt window
-                    bat 'start cmd /c python -m http.server 8000'
+                    bat 'python -m http.server 8000'
                     // Give some time for the server to start
                 }
             }

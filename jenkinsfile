@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // Run your test file
-                    bat 'python tests/seleniumDockerTest.py'
+                    bat 'python seleniumDockerTest.py'
                 }
             }
         }

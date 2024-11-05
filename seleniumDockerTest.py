@@ -18,7 +18,7 @@ driver = webdriver.Remote(
 # Maximize the window size
 driver.maximize_window()
 time.sleep(20)
-driver.get("http://host.docker.internal:8000")  # Access the local server
+driver.get("http://http://127.0.0.1:8000")  # Access the local server
 time.sleep(20)
 
 try:

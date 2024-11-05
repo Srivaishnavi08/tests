@@ -51,7 +51,7 @@ pipeline {
             steps {
                 script {
                     // Run your test file
-                    bat 'python seleniumDockerTest.py'
+                    bat 'start cmd /c python seleniumDockerTest.py'
                 }
             }
         }

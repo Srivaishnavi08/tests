@@ -1,65 +1,39 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKER_IMAGE = 'selenium/standalone-chrome'
-        HTTP_SERVER_PORT = 8000
-    }
-
     stages {
         stage('Pull Docker Image') {
             steps {
                 script {
-                    // Pull the Selenium Docker image
-                    sh "docker pull ${DOCKER_IMAGE}"
+                    bat 'docker pull selenium/standalone-chrome'
                 }
             }
         }
-        
-        stage('Start HTTP Server') {
+        stage('Start Selenium Container') {
             steps {
                 script {
-                    // Start the local HTTP server
-                    // Use 'start' to run the server in a new window
-                    bat "start cmd /c python -m http.server ${HTTP_SERVER_PORT}"
-                    sleep 5 // Wait for the server to start
+                    // Run the Selenium container
+                    bat 'docker run -d -p 4444:4444 --name selenium-chrome selenium/standalone-chrome'
                 }
             }
         }
-        
-        stage('Run Selenium WebDriver Container') {
+        stage('Run Tests') {
             steps {
                 script {
-                    // Start the Selenium WebDriver container
-                    sh "docker run -d -p 4444:4444 -v /dev/shm:/dev/shm ${DOCKER_IMAGE}"
+                    // Ensure the HTTP server is running on the host machine before running tests
+                    bat 'python -m http.server 8000 &'
+                    // Run your test file
+                    bat 'python tests/seleniumDockerTest.py'
                 }
             }
         }
-        
-        stage('Run Selenium Test') {
-            steps {
-                script {
-                    // Execute the Selenium test
-                    sh 'python seleniumDockerTest.py'
-                }
-            }
-        }
-        
-        stage('Cleanup') {
+        stage('Clean Up') {
             steps {
                 script {
                     // Stop and remove the Selenium container
-                    sh 'docker stop $(docker ps -q --filter ancestor=${DOCKER_IMAGE})'
-                    sh 'docker rm $(docker ps -aq --filter ancestor=${DOCKER_IMAGE})'
+                    bat 'docker stop selenium-chrome'
+                    bat 'docker rm selenium-chrome'
                 }
             }
-        }
-    }
-    
-    post {
-        always {
-            // Archive logs or reports if needed
-            archiveArtifacts artifacts: '**/*.log', allowEmptyArchive: true
         }
     }
 }

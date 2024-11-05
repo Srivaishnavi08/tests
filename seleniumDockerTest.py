@@ -4,7 +4,15 @@ pipeline {
         stage('Pull Docker Image') {
             steps {
                 script {
-                    sh 'docker pull selenium/standalone-chrome'
+                    bat 'docker pull selenium/standalone-chrome'
+                }
+            }
+        }
+        stage('Start Selenium Container') {
+            steps {
+                script {
+                    // Run the Selenium container
+                    bat 'docker run -d -p 4444:4444 --name selenium-chrome selenium/standalone-chrome'
                 }
             }
         }
@@ -12,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Start the HTTP server in the background
-                    sh 'start cmd /c "cd path/to/your/html && python -m http.server 8000"'
+                    bat 'start cmd /c "cd tests && python -m http.server 8000"'
                     // Optional: Wait for a few seconds to ensure the server is up
                     sleep 5
                 }
@@ -21,17 +29,17 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Assuming your test file is in the workspace
-                    sh 'python seleniumDockerTest.py'
+                    // Run your test file
+                    bat 'python tests/seleniumDockerTest.py'
                 }
             }
         }
         stage('Clean Up') {
             steps {
                 script {
-                    // Stop and remove the Docker container
-                    sh 'docker ps -q -f ancestor=selenium/standalone-chrome | xargs docker stop'
-                    sh 'docker ps -a -q -f ancestor=selenium/standalone-chrome | xargs docker rm'
+                    // Stop and remove the Selenium container
+                    bat 'docker stop selenium-chrome'
+                    bat 'docker rm selenium-chrome'
                 }
             }
         }

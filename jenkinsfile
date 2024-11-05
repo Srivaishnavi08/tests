@@ -22,7 +22,7 @@ pipeline {
                     // Start the HTTP server in a new command prompt window
                     bat 'start cmd /c python -m http.server 8000'
                     // Give some time for the server to start
-                    bat 'call timeout /t 5' // Corrected line to run timeout command
+                    bat 'call timeout /t 30' // Corrected line to run timeout command
                     // Run your test file
                     bat 'python tests/seleniumDockerTest.py'
                 }

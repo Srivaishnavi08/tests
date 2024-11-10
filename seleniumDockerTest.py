@@ -17,9 +17,9 @@ driver = webdriver.Remote(
 
 # Maximize the window size
 driver.maximize_window()
-time.sleep(20)
+time.sleep(10)
 driver.get("http://127.0.0.1:8000")  # Access the local server
-time.sleep(20)
+time.sleep(10)
 
 try:
     # Wait for the "Get started free" link to be clickable

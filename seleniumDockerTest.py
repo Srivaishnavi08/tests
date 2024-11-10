@@ -41,7 +41,7 @@ try:
     password = driver.find_element(By.ID, "user_password")
     login_button = driver.find_element(By.NAME, "commit")
 
-    username.send_keys("abc@gmail.co")  # Replace with actual username
+    username.send_keys("abc@gmail.com")  # Replace with actual username
     password.send_keys("password")  # Replace with actual password
     login_button.click()
 

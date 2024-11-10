@@ -30,7 +30,7 @@ try:
     time.sleep(10)  # Wait for any resulting page to load
 
     WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "user_email_login"))
+        EC.presence_of_element_located((By.ID, "user_email"))
     )
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "user_password"))

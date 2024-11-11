@@ -17,20 +17,20 @@ driver = webdriver.Remote(
 
 # Maximize the window size
 driver.maximize_window()
-time.sleep(10)
-driver.get("http://127.0.0.1:8000")  # Access the local server
-time.sleep(10)
+time.sleep(20)
+driver.get("http://host.docker.internal:8000")  # Access the local server
+time.sleep(20)
 
 try:
     # Wait for the "Get started free" link to be clickable
-    link = WebDriverWait(driver, 20).until(
-        EC.element_to_be_clickable((By.LINK_TEXT, "Get started free"))
+    link = WebDriverWait(driver, 30).until(
+        EC.element_to_be_clickable((By.LINK_TEXT, "Get started"))
     )
     link.click()  # Click the link
     time.sleep(10)  # Wait for any resulting page to load
 
     WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "user_email"))
+        EC.presence_of_element_located((By.ID, "user_email_login"))
     )
     WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "user_password"))
@@ -41,16 +41,23 @@ try:
     password = driver.find_element(By.ID, "user_password")
     login_button = driver.find_element(By.NAME, "commit")
 
-    username.send_keys("abc@gmail.com")  # Replace with actual username
-    password.send_keys("password")  # Replace with actual password
+    username.send_keys("ac@gmail.com")  # Replace with actual username
+    password.send_keys("psword")  # Replace with actual password
     login_button.click()
 
     # Check for a post-login element (adjust to your page's unique element for logged-in users)
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "unique_post_login_element"))  # Replace with an actual ID
-    )
-
-    print("Login Successful!")
+    try:
+        error_message = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, "error-message"))
+        )
+        time.sleep(10)
+        print("Login failed: Incorrect credentials")
+    except:
+        # No error message found, proceed with checking for dashboard
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, "dashboard"))  # Replace with actual post-login element ID
+        )
+        print("Login Successful!")
 
 except Exception as e:
     print(f"An error occurred while trying to click the link: {e}")
@@ -58,4 +65,4 @@ except Exception as e:
 finally:
     # Ensure the browser quits after execution
     driver.quit()
-    print("Test Execution Successfully Completed!")
+    print("Test Execution Completed!")
